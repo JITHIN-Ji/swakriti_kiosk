@@ -9,7 +9,7 @@ import { QUESTIONS, getNextQuestion, getEligibleQuestions } from './data/questio
 import { upsertUserState } from './utils/storage';
 import { startContinuousListening, stopContinuousListening, speak } from './utils/voice';
 
-const BACKEND_URL = 'http://127.0.0.1:5000';
+const BACKEND_URL = 'https://supercriminally-ununified-arnoldo.ngrok-free.dev';
 
 function App() {
   const [phase, setPhase] = useState('welcome');
