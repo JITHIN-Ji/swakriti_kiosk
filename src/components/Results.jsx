@@ -51,10 +51,22 @@ export default function Results({ state, currentUser, onRestart, backendUrl }) {
 
         .results-screen {
           width: 100%;
-          max-width: 480px;
+          max-width: 1200px;
           margin: 0 auto;
           padding: 0 16px 24px;
           box-sizing: border-box;
+        }
+
+        @media (min-width: 768px) {
+          .results-screen {
+            padding: 0 32px 32px;
+          }
+        }
+
+        @media (min-width: 1024px) {
+          .results-screen {
+            padding: 0 48px 48px;
+          }
         }
 
         .results-header {
@@ -102,7 +114,20 @@ export default function Results({ state, currentUser, onRestart, backendUrl }) {
 
         @media (min-width: 480px) {
           .result-cards {
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        @media (min-width: 900px) {
+          .result-cards {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+          }
+        }
+
+        @media (min-width: 1200px) {
+          .result-cards {
+            grid-template-columns: repeat(4, 1fr);
           }
         }
 
