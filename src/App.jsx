@@ -5,7 +5,7 @@ import Auth from './components/Auth';
 import VoiceIntake from './components/VoiceIntake';
 import Question from './components/Question';
 import Results from './components/Results';
-import { QUESTIONS, getNextQuestion, getEligibleQuestions } from './data/questions';
+import { QUESTIONS, getNextQuestion } from './data/questions';
 import { upsertUserState } from './utils/storage';
 import { startContinuousListening, stopContinuousListening, speak } from './utils/voice';
 
@@ -33,15 +33,16 @@ function App() {
     setPhase(savedAnswered && savedAnswered.length > 0 ? 'questions' : 'intake');
   }
 
-  // Sends transcript + only the ELIGIBLE not-yet-answered questions (state-aware,
-  // not just "everything unanswered") in one call, flagging which question is
-  // currently on screen so the LLM prioritizes matching against it. Restricting
-  // to eligible questions prevents stray words from matching fields that aren't
-  // even reachable in this session (e.g. child_gender for an adult-man session).
+  // Sends transcript + ALL unanswered questions in one call, flagging which question is
+  // currently on screen so the LLM prioritizes matching against it first.
+  // Including all unanswered questions allows the LLM to extract any relevant field
+  // (like color) that the user explicitly mentions, even if that question hasn't been
+  // reached in the eligibility path yet. The "current_question_id" flag helps the LLM
+  // prioritize if there are ambiguities.
   async function callParseAnswer(transcript, currentQuestionId) {
-    const eligibleIds = getEligibleQuestions(stateRef.current, answeredRef.current);
+    const answeredSet = new Set(answeredRef.current);
     const remaining = QUESTIONS
-      .filter(q => eligibleIds.includes(q.id))
+      .filter(q => !answeredSet.has(q.id))
       .map(q => ({ id: q.id, text: q.text, options: q.options, type: q.type }));
 
     if (remaining.length === 0) return;
@@ -55,7 +56,8 @@ function App() {
         body: JSON.stringify({
           transcript,
           remaining_questions: remaining,
-          current_question_id: currentQuestionId || null
+          current_question_id: currentQuestionId || null,
+          known_state: stateRef.current
         })
       });
       const data = await res.json();
