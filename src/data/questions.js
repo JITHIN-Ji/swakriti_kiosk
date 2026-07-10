@@ -1,6 +1,6 @@
 export const QUESTIONS = [
   { id: 'gender', text: 'Who are we finding this outfit for?', type: 'single',
-    options: ['Myself (woman)', 'Myself (man)', 'My child / family member'] },
+    options: ['Myself (woman)', 'Myself (man)', 'My child'] },
   { id: 'child_gender', text: 'What gender are we shopping for?', type: 'single',
     options: ['Girl', 'Boy'] },
   { id: 'size', text: 'What size should we find?', type: 'single',
@@ -35,7 +35,7 @@ export const QUESTIONS = [
 
 export function getNextQuestion(state, answered) {
   if (!answered.includes('gender')) return 'gender';
-  if (state.gender === 'My child / family member' && !answered.includes('child_gender')) return 'child_gender';
+  if (state.gender === 'My child' && !answered.includes('child_gender')) return 'child_gender';
 
   const isChild = ['Girl', 'Boy'].includes(state.child_gender);
   if (isChild && !answered.includes('size_kids')) return 'size_kids';
@@ -78,14 +78,14 @@ export function getEligibleQuestions(state, answered) {
 
   if (!answered.includes('gender')) eligible.push('gender');
 
-  if (state.gender === 'My child / family member' && !answered.includes('child_gender')) {
+  if (state.gender === 'My child' && !answered.includes('child_gender')) {
     eligible.push('child_gender');
   }
 
   const isChild = ['Girl', 'Boy'].includes(state.child_gender);
   if (state.gender) {
     if (isChild && !answered.includes('size_kids')) eligible.push('size_kids');
-    if (!isChild && state.gender !== 'My child / family member' && !answered.includes('size')) eligible.push('size');
+    if (!isChild && state.gender !== 'My child' && !answered.includes('size')) eligible.push('size');
   }
 
   if (!answered.includes('budget')) eligible.push('budget');
